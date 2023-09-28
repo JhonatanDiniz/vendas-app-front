@@ -1,30 +1,52 @@
 import { Layout, Input, TextArea } from "components"
 import { useState } from "react"
+import { useProdutoService } from 'app/services'
+import { Produto } from 'app/models/produtos'
 
 export const CadastroProdutos: React.FC = () =>{
-    const [ codigo, setCodigo ] = useState<string>('')
+
+    const service = useProdutoService()
+    const [ id, setId ] = useState<number>()
+    const [ dtCadastro, setDtCadastro ] = useState<string>()
     const [ valor, setValor ] = useState<string>('')
     const [ nome, setNome ] = useState<string>('')
     const[ descricao, setDescricao ] = useState<string>('')
 
     const submit = () =>{
-        const produto = {
-            codigo, valor, nome, descricao
+        const produto: Produto = {
+            valor: parseFloat(valor), 
+            nome: nome.toUpperCase(), 
+            descricao
         }
-        console.log(produto)
+        service.create(produto).then(produtoResposta => {
+            setId(produtoResposta.id)
+            setDtCadastro(produtoResposta.dtCadastro)
+            console.log(produtoResposta)
+        })
     }
 
     return(
         <Layout titulo="Cadastro de Produtos">
-            <div className="columns">
-                <Input
-                    label="Código:"
-                    columnClasse="is-half"
-                    onChange={setCodigo}
-                    id="codigo"
-                    placeholder="Código do produto"
-                />
+            {id &&
+                <div className="columns">
+                    <Input
+                        label="Id:"
+                        columnClasse="is-half"
+                        value={id}
+                        id="id"
+                        disabled={true}
+                    />
 
+                    <Input
+                        label="Data Cadastro:"
+                        columnClasse="is-half"
+                        value={dtCadastro}
+                        id="dtCadastro"
+                        disabled={true}
+                    />
+                </div>
+            }
+            <div className="columns">
                 <Input
                     label="Valor:"
                     columnClasse="is-half"
